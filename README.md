@@ -7,7 +7,7 @@ This package will come in handy when you need to publish a non-reactive value or
 
 All these values could be obtained by ordinary Meteor pub/sub or with the help of other community packages. However the problem is that they do not work smoothly with a large dataset (few thousands), because, for all packages I've known, they rely on Meteor `.observe` and `.observeChange` to track for changes.
 
-These methods are good for small dataset (few hundreds to thousand) and the result need to be published instantly. When the dataset is big and the result do not need to be published instantly but rather be updated after a certain amount of time, this package will do better.
+These methods are good for small dataset (few hundreds to thousand) and the result need to be published instantly. **When the dataset is big and the result do not need to be published instantly but rather be updated after a certain amount of time**, this package will do better.
 
 Possible use cases:
 
@@ -126,8 +126,8 @@ Meteor.publish('example', function(postId) {
 
 ##### Note
 
-- This package uses a worker run every 500 milliseconds to check for published values which have passed their `interval` time and required to re-publish. Therefore the actual `interval` value runs from `interval` to `interval + 500`
-- The worker of this package is actually a `setTimeout` loop got run every 500 milliseconds. This loop get started by the first call to `JoinServer.publish` and is cleared when the last publication containing a `JoinServer.publish` is stopped
+- This package uses a worker runs every 500 milliseconds to check for published values which have passed their `interval` time and required to re-publish. Therefore the actual `interval` value runs from `interval` to `interval + 500`
+- The worker of this package is actually a `setTimeout` loop got run every 500 milliseconds. This loop is started by the first call to `JoinServer.publish` and is cleared when the last publication containing a `JoinServer.publish` is stopped
 
 ### JoinClient.get(v: String)
 
@@ -155,7 +155,7 @@ Tracker.autorun(() => {
 
 - [ ] Prevent re-run a publish if the last run has not finished
 - [ ] Add max waiting time for a publish, mark the publish as finished if it passes its limit
-- What's esle?
+- [ ] What's else?
 
 ## License
 
