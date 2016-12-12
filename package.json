@@ -1,7 +1,7 @@
 {
   "name": "meteor-publish-join",
   "version": "1.0.0",
-  "description": "Meteor publish join",
+  "description": "Publish non-reactive or aggregated values",
   "repository": {
     "type": "git",
     "url": "https://github.com/nlhuykhang/meteor-publish-join"
