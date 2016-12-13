@@ -22,6 +22,7 @@ export default class Join {
     self.doJoin = Meteor.bindEnvironment(doJoin);
     self.context = context;
     self.lastPublish = new Date();
+    self.isPublishing = false;
 
     store.joinArr.push(self);
 
@@ -57,12 +58,14 @@ export default class Join {
     });
 
     self.lastPublish = new Date();
+    self.isPublishing = false;
   }
 
   publish() {
     const self = this;
 
     try {
+      self.isPublishing = true;
       const value = self.doJoin();
 
       if (value instanceof Promise) {
@@ -82,6 +85,6 @@ export default class Join {
 
     const now = new Date().getTime();
 
-    return (now - self.lastPublish.getTime()) >= self.interval;
+    return (now - self.lastPublish.getTime()) >= self.interval && self.isPublishing === false;
   }
 }
