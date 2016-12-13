@@ -12,6 +12,7 @@ function validate(data) {
     name,
     interval,
     doJoin,
+    maxWaiting,
   } = data;
 
   // XXX: need to make sure context is an instance of Meteor subscription
@@ -31,6 +32,10 @@ function validate(data) {
   if (typeof doJoin !== 'function') {
     throw new Error('PublishJoin: doJoin must be a function');
   }
+
+  if (typeof maxWaiting !== 'number' && typeof maxWaiting !== 'undefined') {
+    throw new Error('PublishJoin: maxWaiting must be a number if provided');
+  }
 }
 
 if (Meteor.isServer) {
@@ -43,9 +48,6 @@ if (Meteor.isServer) {
       startPublishWorker,
       stopPublishWorker,
     });
-
-    // publish for the 1st
-    join.publish();
   };
 }
 
