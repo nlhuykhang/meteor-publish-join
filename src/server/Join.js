@@ -10,6 +10,7 @@ export default class Join {
     const {
       name,
       interval,
+      maxWaiting,
       doJoin,
       context,
     } = data;
@@ -21,8 +22,10 @@ export default class Join {
     self.interval = interval;
     self.doJoin = Meteor.bindEnvironment(doJoin);
     self.context = context;
-    self.lastPublish = new Date();
+    self.lastPublished = new Date();
+    self.lastRunDoJoin = new Date();
     self.isPublishing = false;
+    self.maxWaiting = maxWaiting || 5000;
 
     store.joinArr.push(self);
 
@@ -57,7 +60,7 @@ export default class Join {
       value,
     });
 
-    self.lastPublish = new Date();
+    self.lastPublished = new Date();
     self.isPublishing = false;
   }
 
@@ -66,6 +69,7 @@ export default class Join {
 
     try {
       self.isPublishing = true;
+      self.lastRunDoJoin = new Date();
       const value = self.doJoin();
 
       if (value instanceof Promise) {
@@ -84,7 +88,15 @@ export default class Join {
     const self = this;
 
     const now = new Date().getTime();
+    const lastRunDoJoinTime = self.lastRunDoJoin.getTime();
+    const lastPublishedTime = self.lastPublished.getTime();
 
-    return (now - self.lastPublish.getTime()) >= self.interval && self.isPublishing === false;
+    const isPublishingButExceedMaxWaitingTime = self.isPublishing &&
+      (now - lastRunDoJoinTime >= self.maxWaiting);
+
+    const isNotPublishingAndExceedIntervalTime = !self.isPublishing &&
+      (now - lastPublishedTime >= self.interval)
+
+    return isPublishingButExceedMaxWaitingTime || isNotPublishingAndExceedIntervalTime;
   }
 }
