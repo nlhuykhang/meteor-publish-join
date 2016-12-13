@@ -51,7 +51,14 @@ Meteor.publish('test', function() {
     context: this,
     name: 'randomNumber',
     interval: 1000,
+    maxWaiting: 1000,
     doJoin() {
+      // return new Promise((resolve, reject) => {
+      //   // const wait = (Math.floor(Math.random() * 3) + 1) * 1000;
+      //   // console.log(wait);
+      //
+      //   Meteor.setTimeout(() => resolve(Math.random()), 3000);
+      // })
       return Math.random();
     },
   });
