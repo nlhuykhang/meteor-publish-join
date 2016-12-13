@@ -155,6 +155,8 @@ Tracker.autorun(() => {
 
 - [x] Prevent re-run a publish if the last run has not finished
 - [ ] Add max waiting time for a publish, mark the publish as finished if it passes its limit
+- [ ] Automation test
+- [ ] An indicator option to decide if it needs to re-publishing?
 - [ ] What's else?
 
 ## License
