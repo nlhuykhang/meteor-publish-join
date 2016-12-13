@@ -153,7 +153,7 @@ Tracker.autorun(() => {
 
 ## Todos
 
-- [ ] Prevent re-run a publish if the last run has not finished
+- [x] Prevent re-run a publish if the last run has not finished
 - [ ] Add max waiting time for a publish, mark the publish as finished if it passes its limit
 - [ ] What's else?
 
