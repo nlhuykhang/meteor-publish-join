@@ -2,7 +2,7 @@
 
 const client = {};
 
-if (Meteor.isClient) {
+if (typeof Meteor !== 'undefined' && Meteor.isClient) {
   const JoinCollection = new Mongo.Collection('PublishJoin');
 
   client.get = function get(name) {

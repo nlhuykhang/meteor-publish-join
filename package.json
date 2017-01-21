@@ -1,6 +1,6 @@
 {
   "name": "meteor-publish-join",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Publish non-reactive or aggregated values",
   "repository": {
     "type": "git",

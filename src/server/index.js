@@ -38,7 +38,7 @@ function validate(data) {
   }
 }
 
-if (Meteor.isServer) {
+if (typeof Meteor !== 'undefined' && Meteor.isServer) {
   const store = new Store();
 
   server.publish = function publish(data) {
