@@ -27,7 +27,7 @@ export default class Join {
     self.isPublishing = false;
     self.maxWaiting = maxWaiting || 5000;
 
-    store.joinArr.push(self);
+    store.addJoin(self);
 
     self.context.added('PublishJoin', self.name, {
       value: undefined,
@@ -39,13 +39,7 @@ export default class Join {
 
     // remove this instance from cache array when the publication is stopped
     self.context.onStop(() => {
-      // get the index
-      const index = store.joinArr.findIndex(obj => obj._id === self._id);
-
-      // remove the instance
-      if (index > -1) {
-        store.joinArr.splice(index, 1);
-      }
+      store.removeJoin(self);
 
       if (store.joinArr.length === 0) {
         worker.stopPublishWorker(store);
@@ -84,19 +78,30 @@ export default class Join {
     }
   }
 
-  needPublish() {
-    const self = this;
+  getLastRunDoJoinTime() {
+    return this.lastRunDoJoin.getTime();
+  }
 
+  getLastPublishedTime() {
+    return this.lastPublished.getTime();
+  }
+
+  isPublishingButExceedMaxWaitingTime() {
     const now = new Date().getTime();
-    const lastRunDoJoinTime = self.lastRunDoJoin.getTime();
-    const lastPublishedTime = self.lastPublished.getTime();
 
-    const isPublishingButExceedMaxWaitingTime = self.isPublishing &&
-      (now - lastRunDoJoinTime >= self.maxWaiting);
+    return this.isPublishing &&
+      (now - this.getLastRunDoJoinTime() >= this.maxWaiting);
+  }
 
-    const isNotPublishingAndExceedIntervalTime = !self.isPublishing &&
-      (now - lastPublishedTime >= self.interval)
+  isNotPublishingAndExceedIntervalTime() {
+    const now = new Date().getTime();
 
-    return isPublishingButExceedMaxWaitingTime || isNotPublishingAndExceedIntervalTime;
+    return !this.isPublishing &&
+      (now - this.getLastPublishedTime() >= this.interval);
+  }
+
+  needPublish() {
+    return this.isPublishingButExceedMaxWaitingTime() ||
+     this.isNotPublishingAndExceedIntervalTime();
   }
 }
