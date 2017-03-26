@@ -1,13 +1,5 @@
 /* global Meteor */
 
-function publishAllJoin(store) {
-  store.joinArr.forEach((join) => {
-    if (join && join.needPublish()) {
-      Meteor.defer(() => join.publish());
-    }
-  });
-}
-
 function scheduleNextRun(store, time) {
   // eslint-disable-next-line no-use-before-define
   return Meteor.setTimeout(() => startPublishWorker(store), time);
@@ -17,7 +9,7 @@ export function startPublishWorker(store) {
   if (typeof Meteor !== 'undefined') {
     store.setWorkerHandler(null);
 
-    publishAllJoin(store);
+    store.publishAllJoin();
 
      // what should be the timeout number? is 500 a good number
     const handler = scheduleNextRun(store, 500);

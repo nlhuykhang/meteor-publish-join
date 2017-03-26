@@ -3,9 +3,8 @@
 import uuid from 'node-uuid';
 
 export default class Join {
-  constructor(data, store, worker) {
+  constructor(data) {
     const self = this;
-    const needStartWorker = store.joinArr.length === 0;
 
     const {
       name,
@@ -27,23 +26,8 @@ export default class Join {
     self.isPublishing = false;
     self.maxWaiting = maxWaiting || 5000;
 
-    store.addJoin(self);
-
     self.context.added('PublishJoin', self.name, {
       value: undefined,
-    });
-
-    if (needStartWorker) {
-      worker.startPublishWorker(store);
-    }
-
-    // remove this instance from cache array when the publication is stopped
-    self.context.onStop(() => {
-      store.removeJoin(self);
-
-      if (store.joinArr.length === 0) {
-        worker.stopPublishWorker(store);
-      }
     });
   }
 
@@ -56,6 +40,33 @@ export default class Join {
 
     self.lastPublished = new Date();
     self.isPublishing = false;
+  }
+
+  _getLastRunDoJoinTime() {
+    return this.lastRunDoJoin.getTime();
+  }
+
+  _getLastPublishedTime() {
+    return this.lastPublished.getTime();
+  }
+
+  _isPublishingButExceedMaxWaitingTime() {
+    const now = new Date().getTime();
+
+    return this.isPublishing &&
+      (now - this._getLastRunDoJoinTime() >= this.maxWaiting);
+  }
+
+  _isNotPublishingAndExceedIntervalTime() {
+    const now = new Date().getTime();
+
+    return !this.isPublishing &&
+      (now - this._getLastPublishedTime() >= this.interval);
+  }
+
+  needPublish() {
+    return this._isPublishingButExceedMaxWaitingTime() ||
+     this._isNotPublishingAndExceedIntervalTime();
   }
 
   publish() {
@@ -76,32 +87,5 @@ export default class Join {
     } catch (e) {
       console.error(e);
     }
-  }
-
-  getLastRunDoJoinTime() {
-    return this.lastRunDoJoin.getTime();
-  }
-
-  getLastPublishedTime() {
-    return this.lastPublished.getTime();
-  }
-
-  isPublishingButExceedMaxWaitingTime() {
-    const now = new Date().getTime();
-
-    return this.isPublishing &&
-      (now - this.getLastRunDoJoinTime() >= this.maxWaiting);
-  }
-
-  isNotPublishingAndExceedIntervalTime() {
-    const now = new Date().getTime();
-
-    return !this.isPublishing &&
-      (now - this.getLastPublishedTime() >= this.interval);
-  }
-
-  needPublish() {
-    return this.isPublishingButExceedMaxWaitingTime() ||
-     this.isNotPublishingAndExceedIntervalTime();
   }
 }

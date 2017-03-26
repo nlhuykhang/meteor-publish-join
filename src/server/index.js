@@ -3,6 +3,14 @@
 import Join from './Join';
 import Store from './Store';
 import { startPublishWorker, stopPublishWorker } from './worker';
+import {
+  isObject,
+  isString,
+  isNumber,
+  isFunction,
+  isUndefined,
+  throwError,
+} from '../helpers';
 
 const server = {};
 
@@ -16,26 +24,36 @@ function validate(data) {
   } = data;
 
   // XXX: need to make sure context is an instance of Meteor subscription
-  if (typeof context !== 'object') {
-    throw new Error('PublishJoin: context must be an instance of subscription, e.g. this inside publication');
+  if (!isObject(context)) {
+    throwError('PublishJoin: context must be an instance of subscription, e.g. this inside publication');
   }
 
-  if (typeof name !== 'string') {
-    throw new Error('PublishJoin: name of a join must be a string');
+  if (!isString(name)) {
+    throwError('PublishJoin: name of a join must be a string');
   }
 
   // XXX: should there be any limits of interval?
-  if (typeof interval !== 'number') {
-    throw new Error('PublishJoin: interval must be a number');
+  if (!isNumber(interval)) {
+    throwError('PublishJoin: interval must be a number');
   }
 
-  if (typeof doJoin !== 'function') {
-    throw new Error('PublishJoin: doJoin must be a function');
+  if (!isFunction(doJoin)) {
+    throwError('PublishJoin: doJoin must be a function');
   }
 
-  if (typeof maxWaiting !== 'number' && typeof maxWaiting !== 'undefined') {
-    throw new Error('PublishJoin: maxWaiting must be a number if provided');
+  if (!isNumber(maxWaiting) && !isUndefined(maxWaiting)) {
+    throwError('PublishJoin: maxWaiting must be a number if provided');
   }
+}
+
+function setUpOnStopHandlerForJoin(join, store) {
+  join.context.onStop(() => {
+    store.removeJoin(join);
+
+    if (store.isJoinArrayEmpty()) {
+      stopPublishWorker(store);
+    }
+  });
 }
 
 if (typeof Meteor !== 'undefined' && Meteor.isServer) {
@@ -44,10 +62,17 @@ if (typeof Meteor !== 'undefined' && Meteor.isServer) {
   server.publish = function publish(data) {
     validate(data);
 
-    const join = new Join(data, store, {
-      startPublishWorker,
-      stopPublishWorker,
-    });
+    const needStartWorker = store.isJoinArrayEmpty();
+
+    const join = new Join(data);
+
+    store.addJoin(join);
+
+    if (needStartWorker) {
+      startPublishWorker(store);
+    }
+
+    setUpOnStopHandlerForJoin(join, store);
   };
 }
 

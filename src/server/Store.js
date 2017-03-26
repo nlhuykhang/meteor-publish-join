@@ -16,8 +16,20 @@ export default class Store {
     }
   }
 
+  publishAllJoin() {
+    this.joinArr.forEach((join) => {
+      if (join && join.needPublish()) {
+        Meteor.defer(() => join.publish());
+      }
+    });
+  }
+
+  isJoinArrayEmpty() {
+    return this.joinArr.length === 0;
+  }
+
   addJoin(join) {
-    this.push(join);
+    this.joinArr.push(join);
   }
 
   removeJoin(join) {
