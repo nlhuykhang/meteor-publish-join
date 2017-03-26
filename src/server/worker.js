@@ -21,6 +21,7 @@ export function startPublishWorker(store) {
 export function stopPublishWorker(store) {
   if (typeof Meteor !== 'undefined') {
     const handler = store.getWorkerHandler();
+    store.setWorkerHandler(null);
 
     if (handler) {
       Meteor.clearTimeout(handler);

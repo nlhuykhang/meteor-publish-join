@@ -9,6 +9,7 @@ import {
   isNumber,
   isFunction,
   isUndefined,
+  isBoolean,
   throwError,
 } from '../helpers';
 
@@ -21,6 +22,7 @@ function validate(data) {
     interval,
     doJoin,
     maxWaiting,
+    isShared,
   } = data;
 
   // XXX: need to make sure context is an instance of Meteor subscription
@@ -44,35 +46,79 @@ function validate(data) {
   if (!isNumber(maxWaiting) && !isUndefined(maxWaiting)) {
     throwError('PublishJoin: maxWaiting must be a number if provided');
   }
+
+  if (!isBoolean(isShared) && !isUndefined(isShared)) {
+    throwError('PublishJoin: isShared must be a boolean if provided');
+  }
 }
 
-function setUpOnStopHandlerForJoin(join, store) {
-  join.context.onStop(() => {
-    store.removeJoin(join);
+function setUpOnStopHandlerForContext({
+  context,
+  join,
+  store,
+}) {
+  context.onStop(() => {
+    join.removeContext(context);
 
-    if (store.isJoinArrayEmpty()) {
-      stopPublishWorker(store);
+    if (join.isContextsEmpty()) {
+      store.removeJoin(join);
+
+      if (store.isJoinArrayEmpty()) {
+        stopPublishWorker(store);
+      }
     }
   });
 }
 
+function isShareJoin({ isShared }) {
+  return isShared;
+}
+
+function setUpNormalJoin(store, data) {
+  const needStartWorker = store.isJoinArrayEmpty();
+
+  const join = new Join(data);
+
+  store.addJoin(join);
+
+  if (needStartWorker) {
+    startPublishWorker(store);
+  }
+
+  return join;
+}
+
+function setUpSharedJoin(store, data) {
+  let join = store.findSharedJoinByName(data.name);
+
+  if (join) {
+    join.addContext(data.context);
+  } else {
+    join = setUpNormalJoin(store, data);
+  }
+
+  return join;
+}
+
 if (typeof Meteor !== 'undefined' && Meteor.isServer) {
   const store = new Store();
-
+  server.store = store;
   server.publish = function publish(data) {
     validate(data);
 
-    const needStartWorker = store.isJoinArrayEmpty();
+    let join;
 
-    const join = new Join(data);
-
-    store.addJoin(join);
-
-    if (needStartWorker) {
-      startPublishWorker(store);
+    if (isShareJoin(data)) {
+      join = setUpSharedJoin(store, data);
+    } else {
+      join = setUpNormalJoin(store, data);
     }
 
-    setUpOnStopHandlerForJoin(join, store);
+    setUpOnStopHandlerForContext({
+      context: data.context,
+      join,
+      store,
+    });
   };
 }
 
