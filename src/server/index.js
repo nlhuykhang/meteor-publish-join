@@ -71,7 +71,7 @@ function setUpOnStopHandlerForContext({
 }
 
 function isShareJoin({ isShared }) {
-  return isShared;
+  return !!isShared;
 }
 
 function setUpNormalJoin(store, data) {
@@ -102,7 +102,7 @@ function setUpSharedJoin(store, data) {
 
 if (typeof Meteor !== 'undefined' && Meteor.isServer) {
   const store = new Store();
-  server.store = store;
+
   server.publish = function publish(data) {
     validate(data);
 
