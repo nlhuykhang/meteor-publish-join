@@ -1,24 +1,30 @@
 /* global Meteor, Mongo, Package */
 
-const client = new Mongo.Collection('PublishJoin');
+let collection = {};
 
-client.get = function get(name) {
-  const join = this.findOne({
-    _id: name,
-  });
+if (typeof Meteor !== 'undefined' && Meteor.isClient) {
+  collection = new Mongo.Collection('PublishJoin');
 
-  return join && join.value;
-};
+  collection.get = function get(name) {
+    const join = this.findOne({
+      _id: name,
+    });
 
-client.has = function get(name) {
-  return !!this.findOne({
-    _id: name,
-  });
-};
+    return join && join.value;
+  };
 
-if (Package.templating) {
-  Package.templating.Template.registerHelper('getPublishedJoin', name => client.get(name));
-  Package.templating.Template.registerHelper('hasPublishedJoin', name => client.has(name));
+  collection.has = function get(name) {
+    return !!this.findOne({
+      _id: name,
+    });
+  };
+
+  if (Package.templating) {
+    Package.templating.Template.registerHelper('getPublishedJoin', name => collection.get(name));
+    Package.templating.Template.registerHelper('hasPublishedJoin', name => collection.has(name));
+  }
 }
+
+const client = collection;
 
 export default client;
