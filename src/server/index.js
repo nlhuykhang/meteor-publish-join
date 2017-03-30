@@ -12,7 +12,9 @@ import {
   throwError,
 } from '../helpers';
 
-const server = {};
+const server = {
+  testMode: false,
+};
 
 function validate(data) {
   const {
@@ -66,13 +68,17 @@ if (typeof Meteor !== 'undefined' && Meteor.isServer) {
 
     const join = new Join(data);
 
-    store.addJoin(join);
+    if (this.testMode) {
+      join.publish();
+    } else {
+      store.addJoin(join);
 
-    if (needStartWorker) {
-      startPublishWorker(store);
+      if (needStartWorker) {
+        startPublishWorker(store);
+      }
+
+      setUpOnStopHandlerForJoin(join, store);
     }
-
-    setUpOnStopHandlerForJoin(join, store);
   };
 }
 
