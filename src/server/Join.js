@@ -12,6 +12,7 @@ export default class Join {
       maxWaiting,
       doJoin,
       context,
+      isShared,
     } = data;
 
     // NOTE: _id is used to find and clear the instance when the publication is stopped
@@ -20,26 +21,31 @@ export default class Join {
     self.name = name;
     self.interval = interval;
     self.doJoin = Meteor.bindEnvironment(doJoin);
-    self.context = context;
+    self.contexts = [context];
     self.lastPublished = new Date();
     self.lastRunDoJoin = new Date();
     self.isPublishing = false;
     self.maxWaiting = maxWaiting || 5000;
+    self.currentPublishedValue = undefined;
+    self.isShared = !!isShared;
 
-    self.context.added('PublishJoin', self.name, {
-      value: undefined,
-    });
+    self._initPublishValueForContext(context, self.currentPublishedValue);
+  }
+
+  _initPublishValueForContext(context, value) {
+    context.added('PublishJoin', this.name, { value });
   }
 
   _changed(value) {
     const self = this;
 
-    self.context.changed('PublishJoin', self.name, {
+    self.contexts.forEach(context => context.changed('PublishJoin', self.name, {
       value,
-    });
+    }));
 
     self.lastPublished = new Date();
     self.isPublishing = false;
+    self.currentPublishedValue = value;
   }
 
   _getLastRunDoJoinTime() {
@@ -62,6 +68,21 @@ export default class Join {
 
     return !this.isPublishing &&
       (now - this._getLastPublishedTime() >= this.interval);
+  }
+
+  removeContext({ _subscriptionId }) {
+    this.contexts = this.contexts.filter(
+      context => context._subscriptionId !== _subscriptionId,
+    );
+  }
+
+  addContext(context) {
+    this._initPublishValueForContext(context, this.currentPublishedValue);
+    this.contexts.push(context);
+  }
+
+  isContextsEmpty() {
+    return this.contexts.length === 0;
   }
 
   needPublish() {
