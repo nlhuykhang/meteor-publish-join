@@ -53,6 +53,7 @@
   },
   "dependencies": {
     "babel-runtime": "6.x.x",
-    "node-uuid": "^1.4.7"
+    "node-uuid": "^1.4.7",
+    "sinon": "^2.1.0"
   }
 }
