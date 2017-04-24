@@ -49,11 +49,11 @@
     "grunt-contrib-watch": "^1.0.0",
     "jit-grunt": "^0.10.0",
     "mocha": "2.x.x",
-    "nodemon": "1.7.x"
+    "nodemon": "1.7.x",
+    "sinon": "^2.1.0"
   },
   "dependencies": {
     "babel-runtime": "6.x.x",
-    "node-uuid": "^1.4.7",
-    "sinon": "^2.1.0"
+    "node-uuid": "^1.4.7"
   }
 }
