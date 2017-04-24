@@ -1,4 +1,7 @@
 # Meteor Publish Join
+
+[![Build Status](https://travis-ci.org/nlhuykhang/meteor-publish-join.svg?branch=master)](https://travis-ci.org/nlhuykhang/meteor-publish-join)
+
 Publish non-reactive or aggregated values
 
 ## Use Cases
