@@ -8,3 +8,5 @@
 .eslintrc
 npm-debug.log
 lib
+coverage
+.nyc_output

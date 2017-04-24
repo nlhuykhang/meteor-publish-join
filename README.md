@@ -1,6 +1,6 @@
 # Meteor Publish Join
 
-[![Build Status](https://travis-ci.org/nlhuykhang/meteor-publish-join.svg?branch=master)](https://travis-ci.org/nlhuykhang/meteor-publish-join)
+[![Build Status](https://travis-ci.org/nlhuykhang/meteor-publish-join.svg?branch=master)](https://travis-ci.org/nlhuykhang/meteor-publish-join) [![Coverage Status](https://coveralls.io/repos/github/nlhuykhang/meteor-publish-join/badge.svg?branch=master)](https://coveralls.io/github/nlhuykhang/meteor-publish-join?branch=master)
 
 Publish non-reactive or aggregated values
 
