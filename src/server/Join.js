@@ -42,10 +42,6 @@ export default class Join {
     self.contexts.forEach(context => context.changed('PublishJoin', self.name, {
       value,
     }));
-
-    self.lastPublished = new Date();
-    self.isPublishing = false;
-    self.currentPublishedValue = value;
   }
 
   _getLastRunDoJoinTime() {
@@ -105,6 +101,10 @@ export default class Join {
       } else {
         self._changed(value);
       }
+
+      self.lastPublished = new Date();
+      self.isPublishing = false;
+      self.currentPublishedValue = value;
     } catch (e) {
       console.error(e);
     }
