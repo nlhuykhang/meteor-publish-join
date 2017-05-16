@@ -1,4 +1,4 @@
-/* global Meteor, Mongo, Package */
+/* global Meteor, Mongo */
 
 const client = {};
 let collection;
@@ -14,16 +14,11 @@ if (typeof Meteor !== 'undefined' && Meteor.isClient) {
     return join && join.value;
   };
 
-  client.has = function get(name) {
+  client.has = function has(name) {
     return !!collection.findOne({
       _id: name,
     });
   };
-
-  if (Package.templating) {
-    Package.templating.Template.registerHelper('getPublishedJoin', name => client.get(name));
-    Package.templating.Template.registerHelper('hasPublishedJoin', name => client.has(name));
-  }
 }
 
 export const Client = client;
