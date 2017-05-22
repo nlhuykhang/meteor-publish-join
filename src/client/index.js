@@ -1,17 +1,25 @@
 /* global Meteor, Mongo */
 
 const client = {};
+let collection;
 
 if (typeof Meteor !== 'undefined' && Meteor.isClient) {
-  const JoinCollection = new Mongo.Collection('PublishJoin');
+  collection = new Mongo.Collection('PublishJoin');
 
   client.get = function get(name) {
-    const join = JoinCollection.findOne({
+    const join = collection.findOne({
       _id: name,
     });
 
     return join && join.value;
   };
+
+  client.has = function has(name) {
+    return collection.find({
+      _id: name,
+    }, { limit: 1 }).count() > 0;
+  };
 }
 
-export default client;
+export const Client = client;
+export const Collection = collection;

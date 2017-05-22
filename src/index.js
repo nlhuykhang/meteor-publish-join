@@ -1,6 +1,6 @@
 // Package goes here
 import JoinServer from './server';
-import JoinClient from './client';
+import { Client as JoinClient, Collection as JoinClientCollection } from './client';
 
 if (typeof Meteor === 'undefined') {
   throw new Error('PublishJoin can only be used in a Meteor project');
@@ -9,4 +9,5 @@ if (typeof Meteor === 'undefined') {
 export {
   JoinServer,
   JoinClient,
+  JoinClientCollection,
 };

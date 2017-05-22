@@ -92,7 +92,7 @@ JoinClient.get('withPromise')
 
 ## API
 
-### JoinServer.publish(v: Object)
+### JoinServer.publish(v: Object) [Server]
 
 Use within publication to publish a value to subscriber. Require one argument having following required fields:
 
@@ -132,7 +132,7 @@ Meteor.publish('example', function(postId) {
 - This package uses a worker runs every 500 milliseconds to check for published values which have passed their `interval` time and required to re-publish. Therefore the actual `interval` value runs from `interval` to `interval + 500`
 - The worker of this package is actually a `setTimeout` loop got run every 500 milliseconds. This loop is started by the first call to `JoinServer.publish` and is cleared when the last publication containing a `JoinServer.publish` is stopped
 
-### JoinClient.get(v: String)
+### JoinClient.get(v: String) [Client]
 
 Use in client to obtain the published values. This function is reactive, it could be used in Blaze helpers, Tracker.auto, and other computation block.
 
@@ -151,6 +151,28 @@ Template.hello.helpers({
 // Use in Tracker.autorun
 Tracker.autorun(() => {
   console.log(JoinClient.get('numComments'));
+});
+```
+
+### JoinClient.has(v: String) [Client]
+
+See if a value has been published. This function is reactive, it could be used in Blaze helpers, Tracker.auto, and other computation block.
+
+##### Example
+
+```javascript
+import { JoinClient } from 'meteor-publish-join';
+
+// Use in Blaze helpers
+Template.hello.helpers({
+  numComments() {
+    return JoinClient.has('numComments');
+  },
+});
+
+// Use in Tracker.autorun
+Tracker.autorun(() => {
+  console.log(JoinClient.has('numComments'));
 });
 ```
 
