@@ -21,3 +21,7 @@ export function isUndefined(value) {
 export function throwError(mes) {
   throw new Error(mes);
 }
+
+export function isBoolean(obj) {
+  return obj === true || obj === false || toString.call(obj) === '[object Boolean]';
+}

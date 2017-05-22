@@ -16,6 +16,10 @@ export default class Store {
     }
   }
 
+  findSharedJoinByName(name) {
+    return this.joinArr.find(join => join.name === name && join.isShared);
+  }
+
   publishAllJoin() {
     this.joinArr.forEach((join) => {
       if (join && join.needPublish()) {
