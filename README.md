@@ -173,21 +173,6 @@ Tracker.autorun(() => {
 });
 ```
 
-## Template helpers
-
-To easily show join values within your templates, use the getPublishedJoin or hasPublishedJoin template helper.
-
-Example:
-
-<p>There are {{getPublishedJoin 'numComments'}} comments.</p>
-<p>
-  {{#if hasPublishedJoin 'numComments'}}
-    There are {{getPublishedJoin 'numComments'}} comments.
-  {{else}}
-    The number of comments is loading...
-  {{/if}}
-</p>
-
 ## Todos
 
 - [x] Prevent re-run a publish if the last run has not finished
