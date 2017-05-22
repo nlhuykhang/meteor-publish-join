@@ -28,7 +28,7 @@ describe('client get', () => {
   });
 
   it('should return undefined if value does not exist', () => {
-    const JoinClient = require('../../client/index').default;
+    const JoinClient = require('../../client/index').Client;
 
     const result = JoinClient.get('test');
 
@@ -36,7 +36,7 @@ describe('client get', () => {
   });
 
   it('should return exact value of id', () => {
-    const JoinClient = require('../../client/index').default;
+    const JoinClient = require('../../client/index').Client;
 
     map.test = {
       value: 'test',

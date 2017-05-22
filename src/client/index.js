@@ -15,9 +15,9 @@ if (typeof Meteor !== 'undefined' && Meteor.isClient) {
   };
 
   client.has = function has(name) {
-    return !!collection.findOne({
+    return collection.find({
       _id: name,
-    });
+    }, { limit: 1 }).count() > 0;
   };
 }
 
