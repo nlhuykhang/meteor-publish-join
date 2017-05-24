@@ -22,8 +22,8 @@ export default class Join {
     self.interval = interval;
     self.doJoin = Meteor.bindEnvironment(doJoin);
     self.contexts = [context];
-    self.lastPublished = new Date();
-    self.lastRunDoJoin = new Date();
+    self.lastPublished = new Date(0);
+    self.lastRunDoJoin = new Date(0);
     self.isPublishing = false;
     self.maxWaiting = maxWaiting || 5000;
     self.currentPublishedValue = undefined;
