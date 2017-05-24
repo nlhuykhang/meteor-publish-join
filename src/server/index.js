@@ -13,7 +13,9 @@ import {
   throwError,
 } from '../helpers';
 
-const server = {};
+const server = {
+  testMode: false,
+};
 
 function validate(data) {
   const {
@@ -105,6 +107,11 @@ if (typeof Meteor !== 'undefined' && Meteor.isServer) {
 
   server.publish = function publish(data) {
     validate(data);
+
+    if (this.testMode) {
+      (new Join(data)).publish();
+      return;
+    }
 
     let join;
 
