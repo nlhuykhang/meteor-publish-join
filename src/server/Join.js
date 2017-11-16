@@ -1,6 +1,6 @@
 /* global Meteor */
 
-import uuid from 'node-uuid';
+import uuid from 'uuid';
 
 export default class Join {
   constructor(data) {
