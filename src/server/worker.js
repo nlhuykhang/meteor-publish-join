@@ -1,5 +1,9 @@
 /* global Meteor */
 
+import debug from 'debug';
+
+const log = debug('PublishJoin');
+
 function scheduleNextRun(store, time) {
   // eslint-disable-next-line no-use-before-define
   return Meteor.setTimeout(() => startPublishWorker(store), time);
@@ -24,10 +28,12 @@ export function stopPublishWorker(store) {
     store.setWorkerHandler(null);
 
     if (handler) {
+      log('Clearing the timeout of the last handler');
       Meteor.clearTimeout(handler);
       return;
     }
 
+    log('Try again to stop the publish worker');
     // XXX Could there be any issues causing this run forever?
     Meteor.setTimeout(() => stopPublishWorker(store), 200);
   }

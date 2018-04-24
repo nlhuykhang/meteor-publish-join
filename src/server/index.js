@@ -1,5 +1,6 @@
 /* global Meteor, Mongo */
 
+import debug from 'debug';
 import Join from './Join';
 import Store from './Store';
 import { startPublishWorker, stopPublishWorker } from './worker';
@@ -12,6 +13,8 @@ import {
   isBoolean,
   throwError,
 } from '../helpers';
+
+const log = debug('PublishJoin');
 
 const server = {};
 
@@ -58,13 +61,16 @@ function setUpOnStopHandlerForContext({
   store,
 }) {
   context.onStop(() => {
+    log('Removing context from join');
     join.removeContext(context);
 
     if (join.isContextsEmpty()) {
+      log('Removing empty context');
       store.removeJoin(join);
 
       if (store.isJoinArrayEmpty()) {
-        stopPublishWorker(store);
+        log('Stopping the publish worker');
+        stopPublishWorker(store, log);
       }
     }
   });
@@ -81,7 +87,9 @@ function setUpNormalJoin(store, data) {
 
   store.addJoin(join);
 
+  log('Publishing a join on ', data.name);
   if (needStartWorker) {
+    log('Starting the publish worker');
     startPublishWorker(store);
   }
 
@@ -92,6 +100,7 @@ function setUpSharedJoin(store, data) {
   let join = store.findSharedJoinByName(data.name);
 
   if (join) {
+    log('Joining a shared join on ', data.name);
     join.addContext(data.context);
   } else {
     join = setUpNormalJoin(store, data);
