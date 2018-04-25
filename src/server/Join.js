@@ -13,6 +13,7 @@ export default class Join {
       doJoin,
       context,
       isShared,
+      log,
     } = data;
 
     // NOTE: _id is used to find and clear the instance when the publication is stopped
@@ -28,6 +29,7 @@ export default class Join {
     self.maxWaiting = maxWaiting || 5000;
     self.currentPublishedValue = undefined;
     self.isShared = !!isShared;
+    self.log = log;
 
     self._initPublishValueForContext(context, self.currentPublishedValue);
   }
@@ -106,7 +108,7 @@ export default class Join {
       self.isPublishing = false;
       self.currentPublishedValue = value;
     } catch (e) {
-      console.error(e);
+      self.log(e, 3);
     }
   }
 }
