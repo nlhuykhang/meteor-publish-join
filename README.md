@@ -132,6 +132,32 @@ Meteor.publish('example', function(postId) {
 - This package uses a worker runs every 500 milliseconds to check for published values which have passed their `interval` time and required to re-publish. Therefore the actual `interval` value runs from `interval` to `interval + 500`
 - The worker of this package is actually a `setTimeout` loop got run every 500 milliseconds. This loop is started by the first call to `JoinServer.publish` and is cleared when the last publication containing a `JoinServer.publish` is stopped
 
+### JoinServer.log(msg: String, level: Integer) [Server]
+
+This method is intended to be overwritten by you and is called by the package internally for you to understand what it actually is busy with. The first parameter holds the message and the second parameter is the priority of the message on a scale from `0`to `7` where `0` is highly critical and `7` is useful information for debugging.
+
+By default, every message on a level `< 4` is thrown as an exception, which reflects the behavior before introducing this option.
+
+##### Example
+
+```javascript
+import { JoinServer } from 'meteor-publish-join';
+import winston from 'winston';
+
+const levels = [ 
+  'error',
+  'warn',
+  'info',
+  'verbose',
+  'debug',
+  'silly'
+];
+
+JoinServer.log = (msg, level) => {
+  winston.log(levels[level], msg);
+};
+```
+
 ### JoinClient.get(v: String) [Client]
 
 Use in client to obtain the published values. This function is reactive, it could be used in Blaze helpers, Tracker.auto, and other computation block.
