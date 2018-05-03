@@ -108,7 +108,7 @@ export default class Join {
       self.isPublishing = false;
       self.currentPublishedValue = value;
     } catch (e) {
-      self.log(e, 3);
+      self.log((e && (e.stack || e.message)) || e, 3);
     }
   }
 }
