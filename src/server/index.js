@@ -64,15 +64,15 @@ function setUpOnStopHandlerForContext({
   store,
 }) {
   context.onStop(() => {
-    join.log('Removing context from join', 6);
+    join.log(`Removing the subscription ${context._subscriptionId} from join ${join._id}`, 6);
     join.removeContext(context);
 
     if (join.isContextsEmpty()) {
-      join.log('Removing empty context', 7);
+      join.log(`Cleaning up empty join ${join._id}`, 7);
       store.removeJoin(join);
 
       if (store.isJoinArrayEmpty()) {
-        join.log('Stopping the publish worker', 7);
+        join.log('Stopping the publish worker', 5);
         stopPublishWorker(store, join.log);
       }
     }
@@ -92,11 +92,11 @@ function setUpNormalJoin(store, data) {
 
   const join = new Join(data);
 
+  join.log(`Initializing join ${data.name} for subscription ${data.context._subscriptionId}`, 6);
   store.addJoin(join);
 
-  join.log(`Publishing a join on ${data.name}`, 6);
   if (needStartWorker) {
-    join.log('Starting the publish worker');
+    join.log('Starting the publish worker', 5);
     startPublishWorker(store);
   }
 
@@ -107,7 +107,7 @@ function setUpSharedJoin(store, data) {
   let join = store.findSharedJoinByName(data.name);
 
   if (join) {
-    join.log(`Joining a shared join on ${data.name}`, 6);
+    join.log(`Linking the existing join ${data.name} to the subscription ${data.context._subscriptionId}`, 6);
     join.addContext(data.context);
   } else {
     join = setUpNormalJoin(store, data);

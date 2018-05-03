@@ -24,12 +24,12 @@ export function stopPublishWorker(store, log) {
     store.setWorkerHandler(null);
 
     if (handler) {
-      log('Clearing the timeout of the last handler', 5);
+      log('Publish worker is stopped', 7);
       Meteor.clearTimeout(handler);
       return;
     }
 
-    log('Try again to stop the publish worker', 4);
+    log('Couldn\'t stop the publish worker, try again', 4);
     // XXX Could there be any issues causing this run forever?
     Meteor.setTimeout(() => stopPublishWorker(store, log), 200);
   }
