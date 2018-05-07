@@ -86,8 +86,8 @@ function isShareJoin({ isShared }) {
 function setUpNormalJoin(store, data) {
   const needStartWorker = store.isJoinArrayEmpty();
 
-  if (!data.logging) {
-    data.logging = server.logging;
+  if (!data.log) {
+    data.log = server.log;
   }
 
   const join = new Join(data);
