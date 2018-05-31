@@ -92,7 +92,7 @@ function setUpNormalJoin(store, data) {
 
   const join = new Join(data);
 
-  join.log(`Initializing join ${data.name} for subscription ${data.context._subscriptionId}`, 6);
+  join.log(`Initializing join ${data.name} - ${join._id} for subscription ${data.context._subscriptionId}`, 6);
   store.addJoin(join);
 
   if (needStartWorker) {
@@ -107,7 +107,7 @@ function setUpSharedJoin(store, data) {
   let join = store.findSharedJoinByName(data.name);
 
   if (join) {
-    join.log(`Linking the existing join ${data.name} to the subscription ${data.context._subscriptionId}`, 6);
+    join.log(`Linking the existing join ${join._id} to the subscription ${data.context._subscriptionId}`, 6);
     join.addContext(data.context);
   } else {
     join = setUpNormalJoin(store, data);
