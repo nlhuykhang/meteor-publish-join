@@ -134,17 +134,30 @@ Meteor.publish('example', function(postId) {
 
 ### JoinServer.log(msg: String, level: Integer) [Server]
 
-This method is intended to be overwritten by you and is called by the package internally for you to understand what it actually is busy with. The first parameter holds the message and the second parameter is the priority of the message on a scale from `0`to `7` where `0` is highly critical and `7` is useful information for debugging.
+This method is intended to be overwritten by you and is called by the package internally for you to understand what it actually is busy with. The first parameter holds the message and the second parameter is the priority of the message on a scale from `0`to `7` where `0` is highly critical and `7` is useful information for debugging. The rating is the same as in [RFC 5424](https://tools.ietf.org/html/rfc5424#page-11):
 
-By default, every message on a level `< 4` is thrown as an exception, which reflects the behavior before introducing this option.
+```
+0       Emergency: system is unusable
+1       Alert: action must be taken immediately
+2       Critical: critical conditions
+3       Error: error conditions
+4       Warning: warning conditions
+5       Notice: normal but significant condition
+6       Informational: informational messages
+7       Debug: debug-level messages
+```
 
-##### Example
+By default, every message on a level `< 3` is thrown as an exception, which reflects the behavior before introducing this option.
+
+##### Example how you can use it with [`winston`](https://github.com/winstonjs/winston):
 
 ```javascript
 import { JoinServer } from 'meteor-publish-join';
 import winston from 'winston';
 
 const levels = [ 
+  'error',
+  'error',
   'error',
   'warn',
   'info',
