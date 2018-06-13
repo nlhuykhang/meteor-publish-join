@@ -64,7 +64,7 @@ function setUpOnStopHandlerForContext({
   store,
 }) {
   context.onStop(() => {
-    join.log(`Removing the subscription ${context._subscriptionId} from join ${join._id}`, 6);
+    join.log(`Removing the subscription ${context._subscriptionId} on connection ${context.connection && context.connection.id} by user ${context.userId} from join ${join._id}`, 6);
     join.removeContext(context);
 
     if (join.isContextsEmpty()) {
@@ -92,7 +92,7 @@ function setUpNormalJoin(store, data) {
 
   const join = new Join(data);
 
-  join.log(`Initializing join ${data.name} - ${join._id} for subscription ${data.context._subscriptionId}`, 6);
+  join.log(`Initializing join ${data.name} - ${join._id} for subscription ${data.context._subscriptionId} on connection ${data.context.connection && data.context.connection.id} by user ${data.context.userId}`, 6);
   store.addJoin(join);
 
   if (needStartWorker) {
@@ -107,7 +107,7 @@ function setUpSharedJoin(store, data) {
   let join = store.findSharedJoinByName(data.name);
 
   if (join) {
-    join.log(`Linking the existing join ${join._id} to the subscription ${data.context._subscriptionId}`, 6);
+    join.log(`Linking the existing join ${join._id} to the subscription ${data.context._subscriptionId} on connection ${data.context.connection && data.context.connection.id} by user ${data.context.userId}`, 6);
     join.addContext(data.context);
   } else {
     join = setUpNormalJoin(store, data);
@@ -129,6 +129,7 @@ if (typeof Meteor !== 'undefined' && Meteor.isServer) {
     } else {
       join = setUpNormalJoin(store, data);
     }
+    join.log(`The connection ${data.context.connection && data.context.connection.id} on address ${data.context.connection && data.context.connection.clientAddress} is using the user-agent ${data.context.connection && data.context.connection.httpHeaders['user-agent']}`, 7);
 
     setUpOnStopHandlerForContext({
       context: data.context,
