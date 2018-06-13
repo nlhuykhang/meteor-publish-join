@@ -44,6 +44,7 @@ export default class Join {
     self.contexts.forEach(context => context.changed('PublishJoin', self.name, {
       value,
     }));
+    self.log(`Published data on join ${self.name} - ${self._id} on ${self.contexts.length} context(s)`, 7);
   }
 
   _getLastRunDoJoinTime() {
@@ -92,6 +93,7 @@ export default class Join {
     const self = this;
 
     try {
+      self.log(`Start publishing data on join ${self.name} - ${self._id}`, 7);
       self.isPublishing = true;
       self.lastRunDoJoin = new Date();
       const value = self.doJoin();
