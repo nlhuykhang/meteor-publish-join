@@ -66,8 +66,10 @@ export default class Join {
       (now - this._getLastPublishedTime() >= this.interval);
   }
 
-  _findContextIndex({ _subscriptionId }) {
-    return this.contexts.findIndex(c => c._subscriptionId === _subscriptionId);
+  _findContextIndex({ _subscriptionId, connection }) {
+    return this.contexts.findIndex(c =>
+      c._subscriptionId === _subscriptionId &&
+      c.connection.id === connection.id);
   }
 
   _removeContextAtIndex(index) {
