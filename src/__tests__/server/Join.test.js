@@ -60,6 +60,7 @@ describe('Join class', () => {
         interval: 1000,
         maxWaiting: 1000,
         doJoin() {},
+        log() {},
         context: {
           added() {},
           changed,
