@@ -108,6 +108,9 @@ Use within publication to publish a value to subscriber. Require one argument ha
 - `doJoin`:
   + Type: `Function`
   + Desc: the function used to calculate the published value, got run every `interval` amount of time. Returned value of this function will be published to subscribers. This function also plays nicely with Promise, if a promise is returned the resolved value of that promise will be published
+- `log`:
+  + Type: `Function`
+  + Desc: in case you need to have a different log-function per join. If not provided, `JoinServer.log()` is taken.
 
 ##### Example
 
@@ -131,6 +134,45 @@ Meteor.publish('example', function(postId) {
 
 - This package uses a worker runs every 500 milliseconds to check for published values which have passed their `interval` time and required to re-publish. Therefore the actual `interval` value runs from `interval` to `interval + 500`
 - The worker of this package is actually a `setTimeout` loop got run every 500 milliseconds. This loop is started by the first call to `JoinServer.publish` and is cleared when the last publication containing a `JoinServer.publish` is stopped
+
+### JoinServer.log(msg: String, level: Integer) [Server]
+
+This method is intended to be overwritten by you and is called by the package internally for you to understand what it actually is busy with. The first parameter holds the message and the second parameter is the priority of the message on a scale from `0`to `7` where `0` is highly critical and `7` is useful information for debugging. The rating is the same as in [RFC 5424](https://tools.ietf.org/html/rfc5424#page-11):
+
+```
+0       Emergency: system is unusable
+1       Alert: action must be taken immediately
+2       Critical: critical conditions
+3       Error: error conditions
+4       Warning: warning conditions
+5       Notice: normal but significant condition
+6       Informational: informational messages
+7       Debug: debug-level messages
+```
+
+By default, every message on a level `< 3` is thrown as an exception, which reflects the behavior before introducing this option.
+
+##### Example how you can use it with [`winston`](https://github.com/winstonjs/winston):
+
+```javascript
+import { JoinServer } from 'meteor-publish-join';
+import winston from 'winston';
+
+const levels = [ 
+  'error',
+  'error',
+  'error',
+  'warn',
+  'info',
+  'verbose',
+  'debug',
+  'silly'
+];
+
+JoinServer.log = (msg, level) => {
+  winston.log(levels[level], msg);
+};
+```
 
 ### JoinClient.get(v: String) [Client]
 
