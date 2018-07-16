@@ -13,6 +13,7 @@ export default class Join {
       doJoin,
       context,
       isShared,
+      log,
     } = data;
 
     // NOTE: _id is used to find and clear the instance when the publication is stopped
@@ -28,6 +29,7 @@ export default class Join {
     self.maxWaiting = maxWaiting || 5000;
     self.currentPublishedValue = undefined;
     self.isShared = !!isShared;
+    self.log = log;
 
     self._initPublishValueForContext(context, self.currentPublishedValue);
   }
@@ -42,6 +44,7 @@ export default class Join {
     self.contexts.forEach(context => context.changed('PublishJoin', self.name, {
       value,
     }));
+    self.log(`Published data on join ${self.name} - ${self._id} on ${self.contexts.length} context(s)`, 7);
   }
 
   _getLastRunDoJoinTime() {
@@ -66,10 +69,22 @@ export default class Join {
       (now - this._getLastPublishedTime() >= this.interval);
   }
 
-  removeContext({ _subscriptionId }) {
-    this.contexts = this.contexts.filter(
-      context => context._subscriptionId !== _subscriptionId,
-    );
+  _findContextIndex({ _subscriptionId, connection }) {
+    return this.contexts.findIndex(c =>
+      c._subscriptionId === _subscriptionId &&
+      c.connection.id === connection.id);
+  }
+
+  _removeContextAtIndex(index) {
+    if (index > -1) {
+      this.contexts.splice(index, 1);
+    }
+  }
+
+  removeContext(context) {
+    const contextIndex = this._findContextIndex(context);
+
+    this._removeContextAtIndex(contextIndex);
   }
 
   addContext(context) {
@@ -90,6 +105,7 @@ export default class Join {
     const self = this;
 
     try {
+      self.log(`Start publishing data on join ${self.name} - ${self._id}`, 7);
       self.isPublishing = true;
       self.lastRunDoJoin = new Date();
       const value = self.doJoin();
@@ -106,7 +122,7 @@ export default class Join {
       self.isPublishing = false;
       self.currentPublishedValue = value;
     } catch (e) {
-      console.error(e);
+      self.log((e && (e.stack || e.message)) || e, 3);
     }
   }
 }

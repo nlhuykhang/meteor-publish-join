@@ -18,17 +18,19 @@ export function startPublishWorker(store) {
   }
 }
 
-export function stopPublishWorker(store) {
+export function stopPublishWorker(store, log) {
   if (typeof Meteor !== 'undefined') {
     const handler = store.getWorkerHandler();
     store.setWorkerHandler(null);
 
     if (handler) {
+      log('Publish worker is stopped', 7);
       Meteor.clearTimeout(handler);
       return;
     }
 
+    log('Couldn\'t stop the publish worker, try again', 4);
     // XXX Could there be any issues causing this run forever?
-    Meteor.setTimeout(() => stopPublishWorker(store), 200);
+    Meteor.setTimeout(() => stopPublishWorker(store, log), 200);
   }
 }

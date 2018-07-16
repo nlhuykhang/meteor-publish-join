@@ -60,6 +60,7 @@ describe('Join class', () => {
         interval: 1000,
         maxWaiting: 1000,
         doJoin() {},
+        log() {},
         context: {
           added() {},
           changed,
@@ -242,7 +243,7 @@ describe('Join class', () => {
   });
 
   describe('removeContext', () => {
-    it('should remove context if _subscriptionId matches', () => {
+    it('should remove context if _subscriptionId and connection._id matches', () => {
       const join = new Join({
         name: 'joinName',
         interval: 1000,
@@ -254,9 +255,65 @@ describe('Join class', () => {
         },
         isShared: false,
       });
-      const context1 = { _subscriptionId: 'sub1' };
-      const context2 = { _subscriptionId: 'sub2' };
-      const context3 = { _subscriptionId: 'sub3' };
+      const context1 = { _subscriptionId: 'sub1', connection: { _id: 'id1' } };
+      const context2 = { _subscriptionId: 'sub2', connection: { _id: 'id1' } };
+      const context3 = { _subscriptionId: 'sub3', connection: { _id: 'id2' } };
+      const testContexts = [context1, context2, context3];
+
+      join.contexts = [...testContexts];
+
+      join.removeContext(context1);
+
+      expect(join.contexts).to.have.lengthOf(2);
+      expect(join.contexts).to.have.deep.property('[0]')
+        .that.deep.equals(context2);
+      expect(join.contexts).to.have.deep.property('[1]')
+        .that.deep.equals(context3);
+    });
+
+    it('should only remove one context if _subscriptionId and connection._id matches only one', () => {
+      const join = new Join({
+        name: 'joinName',
+        interval: 1000,
+        maxWaiting: 1000,
+        doJoin() {},
+        context: {
+          added() {},
+          changed() {},
+        },
+        isShared: false,
+      });
+      const context1 = { _subscriptionId: 'sub1', connection: { _id: 'id2' } };
+      const context2 = { _subscriptionId: 'sub1', connection: { _id: 'id1' } };
+      const context3 = { _subscriptionId: 'sub3', connection: { _id: 'id2' } };
+      const testContexts = [context1, context2, context3];
+
+      join.contexts = [...testContexts];
+
+      join.removeContext(context1);
+
+      expect(join.contexts).to.have.lengthOf(2);
+      expect(join.contexts).to.have.deep.property('[0]')
+        .that.deep.equals(context2);
+      expect(join.contexts).to.have.deep.property('[1]')
+        .that.deep.equals(context3);
+    });
+
+    it('should only remove one context if _subscriptionId and connection._id matches many', () => {
+      const join = new Join({
+        name: 'joinName',
+        interval: 1000,
+        maxWaiting: 1000,
+        doJoin() {},
+        context: {
+          added() {},
+          changed() {},
+        },
+        isShared: false,
+      });
+      const context1 = { _subscriptionId: 'sub1', connection: { _id: 'id1' } };
+      const context2 = { _subscriptionId: 'sub1', connection: { _id: 'id1' } };
+      const context3 = { _subscriptionId: 'sub3', connection: { _id: 'id2' } };
       const testContexts = [context1, context2, context3];
 
       join.contexts = [...testContexts];
