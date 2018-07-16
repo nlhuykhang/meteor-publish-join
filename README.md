@@ -108,6 +108,9 @@ Use within publication to publish a value to subscriber. Require one argument ha
 - `doJoin`:
   + Type: `Function`
   + Desc: the function used to calculate the published value, got run every `interval` amount of time. Returned value of this function will be published to subscribers. This function also plays nicely with Promise, if a promise is returned the resolved value of that promise will be published
+- `log`:
+  + Type: `Function`
+  + Desc: in case you need to have a different log-function per join. If not provided, `JoinServer.log()` is taken.
 
 ##### Example
 
