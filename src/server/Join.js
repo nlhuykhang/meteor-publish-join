@@ -66,10 +66,22 @@ export default class Join {
       (now - this._getLastPublishedTime() >= this.interval);
   }
 
-  removeContext({ _subscriptionId }) {
-    this.contexts = this.contexts.filter(
-      context => context._subscriptionId !== _subscriptionId,
-    );
+  _findContextIndex({ _subscriptionId, connection }) {
+    return this.contexts.findIndex(c =>
+      c._subscriptionId === _subscriptionId &&
+      c.connection.id === connection.id);
+  }
+
+  _removeContextAtIndex(index) {
+    if (index > -1) {
+      this.contexts.splice(index, 1);
+    }
+  }
+
+  removeContext(context) {
+    const contextIndex = this._findContextIndex(context);
+
+    this._removeContextAtIndex(contextIndex);
   }
 
   addContext(context) {
