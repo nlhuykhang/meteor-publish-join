@@ -72,7 +72,7 @@ export default class Join {
   _findContextIndex({ _subscriptionId, connection }) {
     return this.contexts.findIndex(c =>
       c._subscriptionId === _subscriptionId &&
-      c.connection.id === connection.id);
+      (c.connection || {}).id === (connection || {}).id);
   }
 
   _removeContextAtIndex(index) {
