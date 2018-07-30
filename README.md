@@ -111,6 +111,9 @@ Use within publication to publish a value to subscriber. Require one argument ha
 - `log`:
   + Type: `Function`
   + Desc: in case you need to have a different log-function per join. If not provided, `JoinServer.log()` is taken.
+- `isShared`:
+  + Type: `Boolean`
+  + Desc: if the result should be shared in case more than one client subscribe with the same name. Useful for expensive computations which produce the same result for all subscribing clients. Default is `false`
 
 ##### Example
 
